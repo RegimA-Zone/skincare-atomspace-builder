@@ -3,6 +3,7 @@
 from pydantic import BaseModel
 from typing import Dict, List, Any, Optional
 from datetime import datetime
+from enum import Enum
 from .enums import WriterType
 
 
@@ -224,3 +225,170 @@ class SuggestSchemaRequest(BaseModel):
 class SuggestSchemaResponse(BaseModel):
     schema: SuggestedSchema
     message: str = "Schema generated successfully"
+
+
+# Skincare Multiscale Model Schemas
+class SkincareScaleLevel(str, Enum):
+    """Different scale levels in skincare modeling."""
+    MOLECULAR = "molecular"
+    CELLULAR = "cellular" 
+    TISSUE = "tissue"
+    FUNCTIONAL = "functional"
+    ENVIRONMENTAL = "environmental"
+
+
+class SkincareMolecularType(str, Enum):
+    """Types of molecular components in skin."""
+    PROTEIN = "protein"
+    LIPID = "lipid"
+    PEPTIDE = "peptide"
+    ENZYME = "enzyme"
+    DNA_RNA = "dna_rna"
+    ANTIOXIDANT = "antioxidant"
+    VITAMIN = "vitamin"
+    ACID = "acid"
+
+
+class SkincareCellularType(str, Enum):
+    """Types of cells in skin."""
+    KERATINOCYTE = "keratinocyte"
+    FIBROBLAST = "fibroblast"
+    MELANOCYTE = "melanocyte"
+    LANGERHANS = "langerhans"
+    STEM_CELL = "stem_cell"
+    IMMUNE_CELL = "immune_cell"
+    SEBOCYTE = "sebocyte"
+
+
+class SkincareTissueLevel(str, Enum):
+    """Skin tissue layers and structures."""
+    STRATUM_CORNEUM = "stratum_corneum"
+    STRATUM_GRANULOSUM = "stratum_granulosum"
+    STRATUM_SPINOSUM = "stratum_spinosum"
+    STRATUM_BASALE = "stratum_basale"
+    PAPILLARY_DERMIS = "papillary_dermis"
+    RETICULAR_DERMIS = "reticular_dermis"
+    HYPODERMIS = "hypodermis"
+    SEBACEOUS_GLAND = "sebaceous_gland"
+    HAIR_FOLLICLE = "hair_follicle"
+
+
+class SkincareFunctionalAspect(str, Enum):
+    """Functional aspects of skin."""
+    BARRIER_FUNCTION = "barrier_function"
+    MOISTURE_RETENTION = "moisture_retention"
+    UV_PROTECTION = "uv_protection"
+    WOUND_HEALING = "wound_healing"
+    AGING_PROCESS = "aging_process"
+    PIGMENTATION = "pigmentation"
+    SEBUM_PRODUCTION = "sebum_production"
+    INFLAMMATION = "inflammation"
+
+
+class SkincareEnvironmentalFactor(str, Enum):
+    """Environmental factors affecting skin."""
+    UV_RADIATION = "uv_radiation"
+    POLLUTION = "pollution"
+    HUMIDITY = "humidity"
+    TEMPERATURE = "temperature"
+    MICROBIOME = "microbiome"
+    SKINCARE_PRODUCT = "skincare_product"
+    LIFESTYLE = "lifestyle"
+
+
+class SkincareComponent(BaseModel):
+    """Base model for skincare components across scales."""
+    id: str
+    name: str
+    scale_level: SkincareScaleLevel
+    component_type: str
+    properties: Dict[str, Any] = {}
+    interactions: List[str] = []  # IDs of other components this interacts with
+    affected_functions: List[SkincareFunctionalAspect] = []
+
+
+class SkincareMolecularComponent(SkincareComponent):
+    """Molecular-level skincare component."""
+    molecular_type: SkincareMolecularType
+    molecular_weight: Optional[float] = None
+    concentration_range: Optional[Dict[str, float]] = None  # min, max, optimal
+    penetration_depth: Optional[str] = None
+    stability_factors: List[str] = []
+
+
+class SkincareCellularComponent(SkincareComponent):
+    """Cellular-level skincare component."""
+    cellular_type: SkincareCellularType
+    cell_cycle_stage: Optional[str] = None
+    proliferation_rate: Optional[float] = None
+    differentiation_markers: List[str] = []
+    metabolic_activity: Optional[str] = None
+
+
+class SkincareTissueComponent(SkincareComponent):
+    """Tissue-level skincare component."""
+    tissue_level: SkincareTissueLevel
+    thickness: Optional[float] = None
+    barrier_strength: Optional[float] = None
+    cell_composition: List[str] = []  # Cellular components present
+    extracellular_matrix: List[str] = []
+
+
+class SkincareEnvironmentalComponent(SkincareComponent):
+    """Environmental factor component."""
+    environmental_type: SkincareEnvironmentalFactor
+    exposure_level: Optional[str] = None  # high, medium, low
+    duration: Optional[str] = None
+    protective_measures: List[str] = []
+
+
+class SkincareInteraction(BaseModel):
+    """Represents interaction between skincare components."""
+    id: str
+    source_component: str
+    target_component: str
+    interaction_type: str  # stimulates, inhibits, modulates, protects
+    strength: Optional[float] = None  # 0.0 to 1.0
+    mechanism: Optional[str] = None
+    conditions: List[str] = []  # Required conditions for interaction
+    scale_crossing: bool = False  # True if interaction crosses scale levels
+
+
+class SkincareMultiscaleSchema(BaseModel):
+    """Complete multiscale schema for skincare modeling."""
+    components: List[SkincareComponent] = []
+    molecular_components: List[SkincareMolecularComponent] = []
+    cellular_components: List[SkincareCellularComponent] = []
+    tissue_components: List[SkincareTissueComponent] = []
+    environmental_components: List[SkincareEnvironmentalComponent] = []
+    interactions: List[SkincareInteraction] = []
+    scale_relationships: Dict[str, List[str]] = {}  # How scales connect
+    functional_outcomes: List[SkincareFunctionalAspect] = []
+
+
+class SkincareSchemaTemplate(BaseModel):
+    """Pre-defined schema template for common skincare scenarios."""
+    template_id: str
+    name: str
+    description: str
+    use_case: str  # anti-aging, acne, moisturizing, etc.
+    target_scale_levels: List[SkincareScaleLevel]
+    schema: SkincareMultiscaleSchema
+    metadata: Dict[str, Any] = {}
+
+
+class SkincareSchemaRequest(BaseModel):
+    """Request to generate skincare-specific schema."""
+    use_case: str
+    target_scale_levels: List[SkincareScaleLevel] = []
+    include_environmental: bool = True
+    focus_areas: List[SkincareFunctionalAspect] = []
+    data_sources: List[DataSource] = []
+
+
+class SkincareSchemaResponse(BaseModel):
+    """Response with generated skincare schema."""
+    schema: SkincareMultiscaleSchema
+    template_used: Optional[str] = None
+    recommendations: List[str] = []
+    message: str = "Skincare schema generated successfully"

@@ -83,6 +83,7 @@ custom-atomspace-builder/
 - **History Management**: Individual job deletion and complete history clearing capabilities
 - **Session-Based Processing**: Support for multi-step workflows using session IDs
 - **Makefile Workflow**: Streamlined development and deployment commands
+- **Skincare Multiscale Modeling**: Domain-specific schemas and templates for modeling skin biology across molecular, cellular, tissue, and environmental scales
 
 ## Installation & Setup
 
@@ -302,6 +303,17 @@ Once running, you can access:
 - `GET /api/output/{job_id}` - Download all job outputs as zip
 - `GET /api/output-file/{job_id}/{filename}` - Download specific file
 
+### Skincare Multiscale Modeling
+
+- `POST /api/skincare/schema/generate` - Generate skincare-specific multiscale schemas
+- `GET /api/skincare/templates` - Get available skincare schema templates
+- `GET /api/skincare/templates/{template_id}` - Get specific template
+- `POST /api/skincare/schema/validate` - Validate skincare schemas
+- `GET /api/skincare/scale-levels` - Get available biological scale levels
+- `GET /api/skincare/functional-aspects` - Get skin functional aspects
+- `GET /api/skincare/use-cases` - Get common skincare use cases
+- `GET /api/skincare/health` - Health check for skincare services
+
 ### System
 
 - `GET /api/health` - Health check endpoint
@@ -385,6 +397,34 @@ make logs-dev
 
 # Clean rebuild when needed
 make rebuild-dev
+```
+
+### Skincare Multiscale Modeling
+
+```bash
+# Generate anti-aging schema
+curl -X POST "http://localhost:8000/api/skincare/schema/generate" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "use_case": "anti_aging",
+    "target_scale_levels": ["molecular", "cellular", "tissue"],
+    "focus_areas": ["aging_process"]
+  }'
+
+# Get available templates
+curl "http://localhost:8000/api/skincare/templates"
+
+# Get skincare use cases  
+curl "http://localhost:8000/api/skincare/use-cases"
+
+# Validate a schema
+curl -X POST "http://localhost:8000/api/skincare/schema/validate" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "molecular_components": [...],
+    "cellular_components": [...],
+    "interactions": [...]
+  }'
 
 # Stop everything
 make down-dev
